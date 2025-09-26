@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.Tizen", "src\Avalonia.Tizen\Avalonia.Tizen.csproj", "{257A438C-D10C-40D7-BA15-C4DAE5C8AB24}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{257A438C-D10C-40D7-BA15-C4DAE5C8AB24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{257A438C-D10C-40D7-BA15-C4DAE5C8AB24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{257A438C-D10C-40D7-BA15-C4DAE5C8AB24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{257A438C-D10C-40D7-BA15-C4DAE5C8AB24}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

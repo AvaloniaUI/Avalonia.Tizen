@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(AvsCurrentTargetFramework)-tizen</TargetFramework>
+    <SupportedOSPlatformVersion>6.5</SupportedOSPlatformVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AvaloniaAccessUnstablePrivateApis>true</AvaloniaAccessUnstablePrivateApis>
+    <Avalonia_I_Want_To_Use_Private_Apis_In_Nuget_Package_And_Promise_To_Pin_The_Exact_Avalonia_Version_In_Package_Dependency>true</Avalonia_I_Want_To_Use_Private_Apis_In_Nuget_Package_And_Promise_To_Pin_The_Exact_Avalonia_Version_In_Package_Dependency>
+    <NoWarn>$(NoWarn);AVA3001</NoWarn>
+  </PropertyGroup>
+
+  <Import Project="AutoImport.props" Sdk="Samsung.Tizen.Sdk" Version="$(AvsCurrentTizenTargetSdk)" />
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="[$(AvaloniaVersion)]" />
+    <PackageReference Include="Avalonia.Skia" Version="[$(AvaloniaVersion)]" />
+  </ItemGroup>
+
+  <Import Project="../../build/SharedVersion.props" />
+  <Import Project="Sdk.targets" Sdk="Samsung.Tizen.Sdk" Version="$(AvsCurrentTizenTargetSdk)" />
+
+  <ItemGroup>
+    <KnownFrameworkReference Update="Samsung.Tizen" TargetingPackVersion="$(AvsCurrentTizenTargetSdk)" />
+  </ItemGroup>
+
+  <Target Name="UpdateCIBuildNumber"
+          BeforeTargets="PreBuildEvent"
+          Condition="'$(TargetFramework)' == '$(AvsCurrentTargetFramework)' And '$(CIBranchName)' != ''">
+
+    <Message Text="##vso[build.updatebuildnumber]$(Version)"
+             Importance="high" />
+
+  </Target>
+
+  <Target Name="VerifyCIBranch"
+          BeforeTargets="PreBuildEvent"
+          Condition="'$(CIBranchName)' != ''">
+
+    <Message Text="Building non-release version $(Version) for $(TargetFramework)"
+             Condition="'$(CIVersionSuffix)' != ''"
+             Importance="high" />
+
+    <Message Text="Building RELEASE version $(Version) for $(TargetFramework)"
+             Condition="'$(CIVersionSuffix)' == ''"
+             Importance="high" />
+
+    <Error Text="Current release branch '$(CIBranchName)' does not match version '$(Version)'!"
+           Condition="'$(CIVersionSuffix)' == '' And '$(CIBranchName)' != '$(Version)'" />
+
+  </Target>
+
+</Project>

@@ -1,0 +1,49 @@
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  configuration: 'Release'
+  lowerConfiguration: '${{ lower(variables.configuration) }}'
+  versionSuffix: ''
+  commonDotNetParameters: '--invalid-will-be-replaced'
+
+steps:
+
+- task: PowerShell@2
+  displayName: 'Set non-release version suffix'
+  condition: not(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
+  inputs:
+    targetType: 'inline'
+    script: |
+      $versionSuffix = "-cibuild{0:D7}-alpha" -f $(Build.BuildId)
+      Write-Output "Setting versionSuffix to '$versionSuffix'"
+      Write-Output "##vso[task.setvariable variable=versionSuffix]$versionSuffix"
+
+- task: UseDotNet@2
+  displayName: 'Install .NET SDK'
+  inputs:
+    packageType: sdk
+    useGlobalJson: true
+
+- script: echo "##vso[task.setvariable variable=commonDotNetParameters]-c $(configuration) -p:CIBranchName='$(Build.SourceBranchName)' -p:CIVersionSuffix='$(versionSuffix)'"
+  displayName: 'Set variables'
+
+- script: dotnet build $(commonDotNetParameters) --no-incremental
+  displayName: 'Build solution'
+
+- script: dotnet pack $(commonDotNetParameters) --no-build
+  displayName: 'Create package'
+
+- task: PublishTestResults@2
+  displayName: 'Publish test results'
+  inputs:
+    testResultsFormat: 'VSTest'
+    testResultsFiles: 'artifacts/test/$(lowerConfiguration)/*.trx'
+  condition: not(canceled())
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish package'
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)/artifacts/package/$(lowerConfiguration)/'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
